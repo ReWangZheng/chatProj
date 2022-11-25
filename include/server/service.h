@@ -8,6 +8,8 @@ using json = nlohmann::json;
 using namespace std;
 using namespace muduo;
 using namespace muduo::net;
+using json = nlohmann::json;
+
 using MsgHandler  = std::function<void(const TcpConnectionPtr&,json &js,Timestamp)>; 
 class ChatService{
 public:

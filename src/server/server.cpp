@@ -2,7 +2,6 @@
 #include "json.hpp"
 #include <iostream>
 #include "service.h"
-using json = nlohmann::json;
 
 ChatServer::ChatServer(EventLoop* loop,
                     const InetAddress& listenAddr,
