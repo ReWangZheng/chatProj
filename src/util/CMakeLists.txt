@@ -1,4 +1,6 @@
 SET(DESTINATION ${PROJECT_SOURCE_DIR})
-aux_source_directory(. SRCLIST)
 
-add_library(util SHARED ${SRCLIST})
+add_library(util SHARED util.cpp)
+add_library(sqlutil SHARED db.cpp)
+
+target_link_libraries(sqlutil mysqlclient)

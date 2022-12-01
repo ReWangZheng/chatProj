@@ -2,7 +2,6 @@
 #include "json.hpp"
 #include <iostream>
 #include "service.h"
-
 ChatServer::ChatServer(EventLoop* loop,
                     const InetAddress& listenAddr,
                     const string& nameArg):m_server(loop,listenAddr,nameArg)
@@ -29,4 +28,8 @@ void ChatServer::onConnection(const TcpConnectionPtr& conn) {
 void ChatServer::onMessageCallback(const TcpConnectionPtr& conn, Buffer* buffer, Timestamp t) {
     string buf = buffer->retrieveAllAsString();
     json js = json::parse(buf);
+    // 获取到msg处理器
+    auto handler_= ChatService::instance()->getHandler(js["msgid"].get<int>());
+    // 然后对时间进行处理
+    handler_(conn,js,t);
 }

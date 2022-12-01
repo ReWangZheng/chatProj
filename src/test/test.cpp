@@ -81,6 +81,7 @@ void clientMessageCallback(const TcpConnectionPtr&,
     int64_t mine = (back+send)/2;
     LOG_INFO << "round trip " << back - send
              << " clock error " << their - mine;
+    
   }
 }
  
