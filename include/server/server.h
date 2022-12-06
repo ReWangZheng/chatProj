@@ -8,16 +8,18 @@ class ChatServer{
 public:
     ChatServer(EventLoop* loop,
             const InetAddress& listenAddr,
-            const string& nameArg);
+            const string nameArg);
     void start();
-
+    void setName(string n);
 private:
-     TcpServer  m_server;
-     EventLoop * m_loop;
-     void onConnection(const TcpConnectionPtr&);
-     
-     void onMessageCallback(const TcpConnectionPtr&,Buffer*,Timestamp);
+    TcpServer  m_server;
+    EventLoop * m_loop;
+    void onConnection(const TcpConnectionPtr&);
+    string m_servername;
+    void onMessageCallback(const TcpConnectionPtr&,Buffer*,Timestamp);
+    void onChannelCallback(string json);
 
+    
 };
 
 #endif

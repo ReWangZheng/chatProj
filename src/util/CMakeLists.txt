@@ -1,6 +1,5 @@
-SET(DESTINATION ${PROJECT_SOURCE_DIR})
+# SET(DESTINATION ${PROJECT_SOURCE_DIR})
+# aux_source_directory(.  UtillList)
+# add_library(util SHARED util.cpp db.cpp usermodel.cpp errormsg.cpp)
 
-add_library(util SHARED util.cpp)
-add_library(sqlutil SHARED db.cpp)
-
-target_link_libraries(sqlutil mysqlclient)
+# target_link_libraries(util mysqlclient)

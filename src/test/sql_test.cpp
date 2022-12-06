@@ -1,16 +1,119 @@
-#include <iostream>
-#include "db/db.h"
-using namespace std;
+// #include <iostream>
+// #include "db/db.h"
+// #include "db/usermodel.h"
+// #include <hiredis/hiredis.h>
+// #include "db/credis.h"
+// #include <yaml-cpp/yaml.h>
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include "spdlog/sinks/rotating_file_sink.h"
 
+using namespace std;
 int main(){
-    Mysql mysql;
-    bool isok = mysql.connect();
-    assert(isok);
-    isok = mysql.update("update user set password=666666 where id=13");
-    assert(isok);
-    MYSQL_RES *res = mysql.querry("select * from user where id=13");
-    MYSQL_ROW row = mysql_fetch_row(res);
-    cout<<row[0]<<","<<row[1]<<","<<row[2]<<endl;
-    mysql_free_result(res);
+    
+    auto info_loger= spdlog::stdout_color_mt("some_unique_name");
+    info_loger->set_level(spdlog::level::debug);
+    info_loger->set_pattern("%+(%s:%#)");
+    SPDLOG_LOGGER_DEBUG(info_loger,"Ye2sss");
+    SPDLOG_DEBUG("Some debug message to default logger that will be evaluated");
+    info_loger->info("??");
+    auto file_logger = spdlog::rotating_logger_mt("file_logger", "mylogfile", 1048576 * 5, 3);
+    auto same_logger= spdlog::get("file_logger");
+    same_logger->info("okok");
     return 0;
 }
+// void redis_test();
+// void redis_test2();
+// void redis_test3();
+// void redis_test4();
+// void redis_test5();
+// void redis_test6(){
+//     auto r = Redis::instance();
+//     redisAppendCommand(r->m_subscribe_context,"subscribe foo");
+//     redisReply *rd;
+//     redisGetReply(r->m_subscribe_context,(void**)&rd);
+//     redisGetReply(r->m_subscribe_context,(void**)&rd);
+//     redisGetReply(r->m_subscribe_context,(void**)&rd);
+//     redisGetReply(r->m_subscribe_context,(void**)&rd);
+
+
+// }
+// int main(){
+//     // auto node = YAML::LoadFile("/home/regan/code/chatProj/src/config/server.yaml");
+//     // cout<<node["server"]["name"].as<string>()<<endl;
+//     // cout<<node["server"]["host"].as<string>()<<endl;
+//     // cout<<node["server"]["port"].as<string>()<<endl;
+//     auto redis = Redis::instance();
+//     redisReply * reply  =(redisReply *) redisCommand(redis->m_subscribe_context,"SUBSCRIBE server1");
+//     freeReplyObject(reply);
+//     cout<<"waiting message \n";
+//     while(redisGetReply(redis->m_subscribe_context,(void **)&reply) == REDIS_OK) {
+//         // consume message
+//         cout<<reply->element[2]->str<<endl;
+//         freeReplyObject(reply);
+        
+//     }
+
+//     return 0;
+// }
+// typedef struct student{
+//     int id;
+//     char *name;
+//     int score;
+// }Student;
+// void printStudent(Student &s){
+//         cout<<s.id<<" "<<" "<<s.score<<endl;
+// }
+// void redis_test5(){
+//     Redis * redis = Redis::instance();
+//     int t=redis->uniqueset("u","b");
+//     cout<<t<<endl;
+// }
+
+
+// void redis_test4(){
+//     Student s;
+//     s.id = 100;
+//     s.score = 89;
+//     Redis *redis = Redis::instance();
+//     redis->set<Student>("s2",&s);
+//     Student*sss = redis->get<Student>("s2");
+//     printStudent(*sss);
+// }
+
+// int model_test(){
+//     UserModel model;
+//     User user;
+//     // t1
+//     // user.setName("admin");
+//     // user.setPassword("admin");
+//     // user.setState("offline");
+//     // user.setId(13);
+
+//     // bool isok=model.update(&user);
+//     // assert(isok);
+
+//     // t2
+//     user.setName("admin");
+
+//     User *u=model.querry(&user);
+//     assert(u->getPassword()=="admin");
+
+//     return 0;
+
+// }
+// void redis_test(){
+//     redisContext * context = redisConnect("127.0.0.1",6379);
+//     if(context==nullptr || context->err){
+//         if(context){
+//             cout<<"Error:"<<context->errstr<<"\n";
+//         }else{
+//             cout<<"无法分配redis context\n";
+//         }
+//     }else{
+//         cout<<"连接分配成功!"<<endl;
+//     }
+//     void *reply = redisCommand(context, "SET %s %s", "v1", "c++");
+//     cout <<(const char *)reply<<"???\n";
+// }
