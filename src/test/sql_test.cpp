@@ -8,20 +8,20 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include "spdlog/sinks/rotating_file_sink.h"
-
+#include "usermodel.h"
+#include "json.hpp"
+using namespace nlohmann;
 using namespace std;
 int main(){
-    
-    auto info_loger= spdlog::stdout_color_mt("some_unique_name");
-    info_loger->set_level(spdlog::level::debug);
-    info_loger->set_pattern("%+(%s:%#)");
-    SPDLOG_LOGGER_DEBUG(info_loger,"Ye2sss");
-    SPDLOG_DEBUG("Some debug message to default logger that will be evaluated");
-    info_loger->info("??");
-    auto file_logger = spdlog::rotating_logger_mt("file_logger", "mylogfile", 1048576 * 5, 3);
-    auto same_logger= spdlog::get("file_logger");
-    same_logger->info("okok");
-    return 0;
+    UserModel model;
+    spdlog::set_level(spdlog::level::debug);
+    model.deleteMessage("admin");
+    auto v = model.fetchMessage("admin");
+    SPDLOG_DEBUG(v.size());
+    for(json j:v){
+        SPDLOG_DEBUG(j.dump());
+    }
+    return 0; 
 }
 // void redis_test();
 // void redis_test2();

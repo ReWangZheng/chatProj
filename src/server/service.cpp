@@ -53,6 +53,13 @@ void ChatService::login(const TcpConnectionPtr& conn, json &js, Timestamp time) 
             m_connMutex.lock();
             m_userconnection.insert({user->getName(),conn});
             m_connMutex.unlock();
+            vector<json> vjs = m_usermodel.fetchMessage(user->getName());
+            conn->send(response.dump());
+            for(auto v:vjs){
+                this->subscribeHandler(v);
+            }
+            m_usermodel.deleteMessage(user->getName());
+            return;
         }else{
             response["error"] = 3;
             response["msg"] = err_tab[3];
@@ -79,7 +86,7 @@ void ChatService::reg(const TcpConnectionPtr& conn, json &js, Timestamp time) {
         response["msg"] = err_tab[5];
     }
     conn->send(response.dump());
-}//{"msgid":2,"name":"regan","password":"regan"}
+}//{"msgid":2,"name":"regan","password":"regan"} |
 
 void  ChatService::chat(const TcpConnectionPtr& conn,json &js,Timestamp time) {
     string from = js["from"];
@@ -101,11 +108,12 @@ void  ChatService::chat(const TcpConnectionPtr& conn,json &js,Timestamp time) {
             redis->publish(sn,js.dump());
         }
     }else{
-
+        // 如果没有在线的话，我们就把消息插入到数据库中
+        m_usermodel.save_message(js);
     }
     
     
-}//{"msgid":3,"from":"regan","to":"admin","content":"I love you !!"} | {"msgid":3,"from":"admin","to":"regan","content":"I love you !!"}
+}//{"msgid":3,"from":"regan","to":"admin","content":"haodeb"} | {"msgid":3,"from":"admin","to":"regan","content":"I love you !!"}
 
 void  ChatService::subscribeHandler(json &js) {
     string from = js["from"];

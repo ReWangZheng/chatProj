@@ -1,5 +1,8 @@
 #include "server/db/usermodel.h"
 #include "db.h"
+#include "json.hpp"
+#include "public.hpp"
+using nlohmann::json;
 UserModel::UserModel() {
     
 }
@@ -78,4 +81,66 @@ bool UserModel::update(User *user) {
         }
     }
     return false;
+}
+
+bool UserModel::save_message(json &js) {
+    Mysql mysql;
+    if(mysql.connect()){
+        string to = js["to"];
+        string content = js.dump();
+        char sql[512];
+        sprintf(sql,"insert into offlinemessage values('%s','%s')",to.c_str(),content.c_str());
+        if(mysql.update(sql)){
+            spdlog::info("离线信息存入数据库成功");
+            return true;
+        }else{
+            spdlog::critical("离线信息存入数据库失败");
+        }
+    }else{
+        spdlog::critical("数据库连接失败");
+        return false;
+    }
+}
+
+vector<json> UserModel::fetchMessage(string name) {
+    Mysql mysql;
+    vector<json> ret;
+    if(mysql.connect()){
+        char sql[512];
+        sprintf(sql,"select message from offlinemessage where name='%s'",name.c_str());
+        SPDLOG_DEBUG(sql);
+        MYSQL_RES *res = mysql.querry(sql);
+        if(res==nullptr){
+            spdlog::warn("{} 没有任何离线消息",name);
+            return ret;
+        }
+        MYSQL_ROW row = nullptr;
+        while((row=mysql_fetch_row(res))!=nullptr){
+            string mes = row[0]; 
+            ret.push_back(json::parse(mes));
+        }
+        mysql_free_result(res);
+        return ret;
+    }else{
+        spdlog::critical("数据库连接失败");
+        return ret;
+    }
+}
+bool UserModel::deleteMessage(string name) {
+    Mysql mysql;
+    vector<json> ret;
+    if(mysql.connect()){
+        char sql[512];
+        sprintf(sql,"delete from offlinemessage where name='%s'",name.c_str());
+        SPDLOG_DEBUG("》》》》{}",sql);
+        if(mysql.update(sql)){
+            spdlog::warn("{}的离线信息全部删除",name);
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        spdlog::critical("数据库连接失败");
+        return false;
+    }
 }
